@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  app:
+  laravel-docker-app:
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
     networks:
       - app-network
 
-  nginx:
+  laravel-docker-nginx:
     build:
       context: .
       dockerfile: ./docker/nginx/Dockerfile
@@ -25,11 +25,11 @@ services:
     volumes:
       - .:/var/www/html
     depends_on:
-      - app
+      - laravel-docker-app
     networks:
       - app-network
 
-  mysql:
+  laravel-docker-mysql:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest\PostRequest;
+use App\Models\Product;
+use Illuminate\Http\Response;
+use Symfony\Component\HttpFoundation\Response as ResponseAlias;
 
 class ProductsController extends Controller
 {
@@ -11,38 +15,35 @@ class ProductsController extends Controller
     }
 
     public function index(): string{
-        $products = [
-            [
-                'id' => 1,
-                'name' => 'dog bed'
-            ],
-            [
-                'id' => 2,
-                'name' => 'cat bed'
-            ]
-        ];
+        $products = Product::query()->get();
         return json_encode($products);
     }
 
     public function show(int $id): string{
-        return json_encode(
+        $product = Product::query()->find($id);
+        return json_encode($product);
+    }
+
+    public function create(PostRequest $request): string{
+        $product = new Product(
             [
-                'id' => $id,
-                'name' => 'dog bed'
+                'name'=>$request->all()['name']
             ]
         );
+        return $product->save();
     }
 
-    public function create(): string{
-        return true;
-    }
-
-    public function update(int $id): string{
-        return true;
+    public function update(int $id, PostRequest $request): string{
+        $product = Product::query()->find($id);
+        if(!$product){
+            return new Response(ResponseAlias::HTTP_NOT_FOUND, 'Product not found for id '.$id);
+        }
+        $product->name = $request->all()['name'];
+        return $product->save();
     }
 
     public function destroy(int $id): string{
-        return true;
+        return Product::query()->find($id)->delete();
     }
 
 }
